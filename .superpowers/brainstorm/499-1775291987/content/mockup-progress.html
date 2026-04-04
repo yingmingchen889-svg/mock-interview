@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f8f9fb; color: #1a1a2e; display: flex; min-height: 100vh; }
+
+  .sidebar { width: 240px; background: white; border-right: 1px solid #eef0f4; flex-shrink: 0; }
+  .sidebar-logo { padding: 20px 24px; font-size: 18px; font-weight: 800; color: #2563eb; border-bottom: 1px solid #eef0f4; }
+  .sidebar-nav { padding: 16px 12px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 14px; color: #64748b; margin-bottom: 4px; cursor: pointer; }
+  .nav-item:hover { background: #f1f5f9; }
+  .nav-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+
+  .main { flex: 1; display: flex; flex-direction: column; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: white; border-bottom: 1px solid #eef0f4; }
+  .header-title { font-size: 18px; font-weight: 600; color: #0f172a; }
+  .avatar { width: 32px; height: 32px; background: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #2563eb; font-weight: 600; }
+  .time-filter { display: flex; gap: 6px; }
+  .time-btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; border: 1px solid #e2e8f0; background: white; color: #64748b; cursor: pointer; }
+  .time-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
+
+  .content { padding: 32px; flex: 1; overflow-y: auto; }
+
+  /* Stats Overview */
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: white; border: 1px solid #eef0f4; border-radius: 14px; padding: 20px; }
+  .stat-label { font-size: 12px; color: #94a3b8; margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 700; color: #0f172a; }
+  .stat-change { font-size: 12px; margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+  .stat-up { color: #22c55e; }
+  .stat-down { color: #ef4444; }
+
+  /* Charts Area */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+
+  .chart-card { background: white; border: 1px solid #eef0f4; border-radius: 16px; padding: 24px; }
+  .chart-card h3 { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+  .chart-card h3 .tag { font-size: 11px; color: #94a3b8; font-weight: 400; }
+
+  /* Score Trend Chart (mock) */
+  .trend-chart { height: 200px; position: relative; background: #fafbfc; border-radius: 12px; padding: 16px; }
+  .trend-y-axis { position: absolute; left: 8px; top: 16px; bottom: 32px; display: flex; flex-direction: column; justify-content: space-between; font-size: 10px; color: #94a3b8; }
+  .trend-x-axis { position: absolute; bottom: 8px; left: 40px; right: 16px; display: flex; justify-content: space-between; font-size: 10px; color: #94a3b8; }
+  .trend-area { position: absolute; top: 20px; bottom: 36px; left: 44px; right: 16px; }
+  .trend-line { width: 100%; height: 100%; position: relative; }
+  .trend-svg { width: 100%; height: 100%; }
+  .trend-grid { position: absolute; inset: 0; }
+  .trend-grid-line { border-bottom: 1px dashed #eef0f4; position: absolute; left: 0; right: 0; }
+
+  /* Radar Chart (mock) */
+  .radar-container { height: 240px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .radar-bg { width: 200px; height: 200px; position: relative; }
+  .radar-ring { position: absolute; border: 1px solid #eef0f4; border-radius: 50%; }
+  .radar-ring-1 { inset: 0; }
+  .radar-ring-2 { inset: 25%; }
+  .radar-ring-3 { inset: 50%; }
+  .radar-shape { position: absolute; inset: 15%; background: rgba(37,99,235,0.1); border: 2px solid rgba(37,99,235,0.5); border-radius: 40% 60% 50% 45%; }
+  .radar-label { position: absolute; font-size: 11px; color: #374151; font-weight: 500; white-space: nowrap; }
+  .radar-score { font-size: 10px; color: #2563eb; font-weight: 600; }
+
+  /* Skill Progress List */
+  .skill-card { background: white; border: 1px solid #eef0f4; border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+  .skill-card h3 { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 20px; }
+  .skill-item { display: flex; align-items: center; gap: 16px; padding: 14px 0; border-bottom: 1px solid #f5f5f5; }
+  .skill-item:last-child { border-bottom: none; }
+  .skill-name { width: 140px; flex-shrink: 0; }
+  .skill-name h4 { font-size: 13px; font-weight: 600; color: #0f172a; }
+  .skill-name p { font-size: 11px; color: #94a3b8; }
+  .skill-bar-wrap { flex: 1; }
+  .skill-bar { height: 8px; background: #eef0f4; border-radius: 4px; overflow: hidden; }
+  .skill-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s; }
+  .skill-bar-high { background: linear-gradient(90deg, #22c55e, #4ade80); }
+  .skill-bar-mid { background: linear-gradient(90deg, #eab308, #fde047); }
+  .skill-bar-low { background: linear-gradient(90deg, #ef4444, #f87171); }
+  .skill-score { width: 48px; text-align: right; font-size: 14px; font-weight: 700; }
+  .skill-score-high { color: #22c55e; }
+  .skill-score-mid { color: #eab308; }
+  .skill-score-low { color: #ef4444; }
+  .skill-trend { width: 60px; text-align: right; font-size: 12px; }
+  .skill-trend-up { color: #22c55e; }
+  .skill-trend-down { color: #ef4444; }
+  .skill-trend-flat { color: #94a3b8; }
+
+  /* Weak Areas */
+  .weak-card { background: white; border: 1px solid #eef0f4; border-radius: 16px; padding: 24px; }
+  .weak-card h3 { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .weak-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border: 1px solid #fef2f2; background: #fffbfb; border-radius: 10px; margin-bottom: 10px; }
+  .weak-item:last-child { margin-bottom: 0; }
+  .weak-info h4 { font-size: 13px; font-weight: 600; color: #dc2626; }
+  .weak-info p { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .weak-action { font-size: 12px; color: #2563eb; cursor: pointer; padding: 6px 14px; background: #eff6ff; border-radius: 6px; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-logo">MockInterview</div>
+  <nav class="sidebar-nav">
+    <a class="nav-item"><span>📊</span> 控制台</a>
+    <a class="nav-item"><span>🎙️</span> 开始面试</a>
+    <a class="nav-item"><span>📋</span> 面试记录</a>
+    <a class="nav-item active"><span>📈</span> 成长追踪</a>
+    <a class="nav-item"><span>⚙️</span> 设置</a>
+  </nav>
+</aside>
+
+<div class="main">
+  <header class="header">
+    <div class="header-title">成长追踪</div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <div class="time-filter">
+        <button class="time-btn">7 天</button>
+        <button class="time-btn active">30 天</button>
+        <button class="time-btn">90 天</button>
+        <button class="time-btn">全部</button>
+      </div>
+      <div class="avatar">张</div>
+    </div>
+  </header>
+
+  <div class="content">
+
+    <!-- Stats Overview -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">累计面试</div>
+        <div class="stat-value">24</div>
+        <div class="stat-change stat-up">↑ 7 本月新增</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">平均得分</div>
+        <div class="stat-value">72</div>
+        <div class="stat-change stat-up">↑ 12 vs 首次</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">最高得分</div>
+        <div class="stat-value">89</div>
+        <div class="stat-change stat-up">↑ 6 vs 上月最高</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">活跃天数</div>
+        <div class="stat-value">18</div>
+        <div class="stat-change" style="color: #64748b;">本月 / 30 天</div>
+      </div>
+    </div>
+
+    <!-- Trend + Radar -->
+    <div class="two-col">
+      <!-- Score Trend -->
+      <div class="chart-card">
+        <h3>得分趋势 <span class="tag">近 30 天</span></h3>
+        <div class="trend-chart">
+          <div class="trend-y-axis">
+            <span>100</span>
+            <span>75</span>
+            <span>50</span>
+            <span>25</span>
+            <span>0</span>
+          </div>
+          <div class="trend-x-axis">
+            <span>3/5</span>
+            <span>3/10</span>
+            <span>3/15</span>
+            <span>3/20</span>
+            <span>3/25</span>
+            <span>3/30</span>
+            <span>4/4</span>
+          </div>
+          <div class="trend-area">
+            <div class="trend-grid">
+              <div class="trend-grid-line" style="top: 0%;"></div>
+              <div class="trend-grid-line" style="top: 25%;"></div>
+              <div class="trend-grid-line" style="top: 50%;"></div>
+              <div class="trend-grid-line" style="top: 75%;"></div>
+            </div>
+            <svg class="trend-svg" viewBox="0 0 300 120" preserveAspectRatio="none">
+              <!-- Area fill -->
+              <path d="M0,96 L43,84 L86,72 L129,78 L172,60 L215,48 L258,42 L300,30 L300,120 L0,120 Z" fill="rgba(37,99,235,0.08)" />
+              <!-- Line -->
+              <polyline points="0,96 43,84 86,72 129,78 172,60 215,48 258,42 300,30" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+              <!-- Dots -->
+              <circle cx="0" cy="96" r="4" fill="#2563eb" />
+              <circle cx="43" cy="84" r="4" fill="#2563eb" />
+              <circle cx="86" cy="72" r="4" fill="#2563eb" />
+              <circle cx="129" cy="78" r="4" fill="#2563eb" />
+              <circle cx="172" cy="60" r="4" fill="#2563eb" />
+              <circle cx="215" cy="48" r="4" fill="#2563eb" />
+              <circle cx="258" cy="42" r="4" fill="#2563eb" />
+              <circle cx="300" cy="30" r="4" fill="#2563eb" />
+              <!-- Score labels -->
+              <text x="0" y="90" font-size="8" fill="#2563eb" font-weight="600">55</text>
+              <text x="38" y="78" font-size="8" fill="#2563eb" font-weight="600">60</text>
+              <text x="81" y="66" font-size="8" fill="#2563eb" font-weight="600">65</text>
+              <text x="124" y="72" font-size="8" fill="#2563eb" font-weight="600">63</text>
+              <text x="167" y="54" font-size="8" fill="#2563eb" font-weight="600">70</text>
+              <text x="210" y="42" font-size="8" fill="#2563eb" font-weight="600">75</text>
+              <text x="253" y="36" font-size="8" fill="#2563eb" font-weight="600">78</text>
+              <text x="290" y="24" font-size="8" fill="#2563eb" font-weight="600">82</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Radar -->
+      <div class="chart-card">
+        <h3>技能雷达 <span class="tag">综合评估</span></h3>
+        <div class="radar-container">
+          <div class="radar-bg">
+            <div class="radar-ring radar-ring-1"></div>
+            <div class="radar-ring radar-ring-2"></div>
+            <div class="radar-ring radar-ring-3"></div>
+            <div class="radar-shape"></div>
+          </div>
+          <!-- Labels -->
+          <span class="radar-label" style="top: 2%; left: 50%; transform: translateX(-50%);">React Hooks <span class="radar-score">85</span></span>
+          <span class="radar-label" style="top: 22%; right: 2%;">TypeScript <span class="radar-score">78</span></span>
+          <span class="radar-label" style="bottom: 22%; right: 2%;">系统设计 <span class="radar-score">62</span></span>
+          <span class="radar-label" style="bottom: 2%; left: 50%; transform: translateX(-50%);">性能优化 <span class="radar-score">45</span></span>
+          <span class="radar-label" style="bottom: 22%; left: 2%;">CSS/布局 <span class="radar-score">72</span></span>
+          <span class="radar-label" style="top: 22%; left: 2%;">算法基础 <span class="radar-score">68</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skill Progress List -->
+    <div class="skill-card">
+      <h3>技能详情</h3>
+
+      <div class="skill-item">
+        <div class="skill-name">
+          <h4>React Hooks</h4>
+          <p>Frontend</p>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar"><div class="skill-bar-fill skill-bar-high" style="width: 85%;"></div></div>
+        </div>
+        <div class="skill-score skill-score-high">85</div>
+        <div class="skill-trend skill-trend-up">↑ 12</div>
+      </div>
+
+      <div class="skill-item">
+        <div class="skill-name">
+          <h4>TypeScript</h4>
+          <p>Frontend</p>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar"><div class="skill-bar-fill skill-bar-high" style="width: 78%;"></div></div>
+        </div>
+        <div class="skill-score skill-score-high">78</div>
+        <div class="skill-trend skill-trend-up">↑ 8</div>
+      </div>
+
+      <div class="skill-item">
+        <div class="skill-name">
+          <h4>CSS / 布局</h4>
+          <p>Frontend</p>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar"><div class="skill-bar-fill skill-bar-mid" style="width: 72%;"></div></div>
+        </div>
+        <div class="skill-score skill-score-mid">72</div>
+        <div class="skill-trend skill-trend-up">↑ 5</div>
+      </div>
+
+      <div class="skill-item">
+        <div class="skill-name">
+          <h4>算法基础</h4>
+          <p>General</p>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar"><div class="skill-bar-fill skill-bar-mid" style="width: 68%;"></div></div>
+        </div>
+        <div class="skill-score skill-score-mid">68</div>
+        <div class="skill-trend skill-trend-flat">— 0</div>
+      </div>
+
+      <div class="skill-item">
+        <div class="skill-name">
+          <h4>系统设计</h4>
+          <p>Architecture</p>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar"><div class="skill-bar-fill skill-bar-mid" style="width: 62%;"></div></div>
+        </div>
+        <div class="skill-score skill-score-mid">62</div>
+        <div class="skill-trend skill-trend-up">↑ 10</div>
+      </div>
+
+      <div class="skill-item">
+        <div class="skill-name">
+          <h4>性能优化</h4>
+          <p>Frontend</p>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar"><div class="skill-bar-fill skill-bar-low" style="width: 45%;"></div></div>
+        </div>
+        <div class="skill-score skill-score-low">45</div>
+        <div class="skill-trend skill-trend-up">↑ 15</div>
+      </div>
+    </div>
+
+    <!-- Weak Areas -->
+    <div class="weak-card">
+      <h3>🔴 重点突破</h3>
+
+      <div class="weak-item">
+        <div class="weak-info">
+          <h4>性能优化</h4>
+          <p>得分 45 · 连续 3 次面试被追问 · 建议系统学习 React.memo / useMemo / 虚拟滚动</p>
+        </div>
+        <div class="weak-action">开始专项练习</div>
+      </div>
+
+      <div class="weak-item">
+        <div class="weak-info">
+          <h4>系统设计</h4>
+          <p>得分 62 · 组件拆分合理但缺乏对大规模数据的考虑 · 建议每周练习 1 道设计题</p>
+        </div>
+        <div class="weak-action">开始专项练习</div>
+      </div>
+
+      <div class="weak-item">
+        <div class="weak-info">
+          <h4>TypeScript 高级类型</h4>
+          <p>得分 58 · 条件类型和映射类型不熟悉 · 建议刷 type-challenges</p>
+        </div>
+        <div class="weak-action">开始专项练习</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

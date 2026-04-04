@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f8f9fb; color: #1a1a2e; display: flex; min-height: 100vh; }
+
+  .sidebar { width: 240px; background: white; border-right: 1px solid #eef0f4; flex-shrink: 0; }
+  .sidebar-logo { padding: 20px 24px; font-size: 18px; font-weight: 800; color: #2563eb; border-bottom: 1px solid #eef0f4; }
+  .sidebar-nav { padding: 16px 12px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 14px; color: #64748b; margin-bottom: 4px; cursor: pointer; }
+  .nav-item:hover { background: #f1f5f9; }
+  .nav-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+
+  .main { flex: 1; display: flex; flex-direction: column; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: white; border-bottom: 1px solid #eef0f4; }
+  .header-title { font-size: 18px; font-weight: 600; color: #0f172a; }
+  .avatar { width: 32px; height: 32px; background: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #2563eb; font-weight: 600; }
+
+  .content { padding: 32px; flex: 1; overflow-y: auto; max-width: 680px; margin: 0 auto; }
+
+  /* Step Progress */
+  .steps-bar { display: flex; align-items: center; gap: 0; margin-bottom: 32px; }
+  .step-dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .step-dot.done { background: #2563eb; color: white; }
+  .step-dot.current { background: #2563eb; color: white; box-shadow: 0 0 0 4px rgba(37,99,235,0.2); }
+  .step-dot.pending { background: #e2e8f0; color: #94a3b8; }
+  .step-line { flex: 1; height: 2px; }
+  .step-line.done { background: #2563eb; }
+  .step-line.pending { background: #e2e8f0; }
+  .step-label { font-size: 11px; color: #94a3b8; margin-top: 6px; text-align: center; }
+
+  /* Card */
+  .setup-card { background: white; border: 1px solid #eef0f4; border-radius: 16px; padding: 28px; margin-bottom: 20px; }
+  .setup-card h3 { font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 6px; }
+  .setup-card .desc { font-size: 13px; color: #94a3b8; margin-bottom: 20px; }
+
+  /* Role Grid */
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px; }
+  .role-item { border: 2px solid #eef0f4; border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.15s; }
+  .role-item:hover { border-color: #bfdbfe; background: #f8faff; }
+  .role-item.selected { border-color: #2563eb; background: #eff6ff; }
+  .role-icon { font-size: 28px; margin-bottom: 8px; }
+  .role-name { font-size: 13px; font-weight: 500; color: #374151; }
+
+  /* Tech Tags */
+  .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tech-tag { padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.15s; border: 1px solid #e2e8f0; color: #64748b; background: white; }
+  .tech-tag:hover { border-color: #bfdbfe; }
+  .tech-tag.selected { background: #2563eb; color: white; border-color: #2563eb; }
+
+  /* Difficulty */
+  .diff-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .diff-item { border: 2px solid #eef0f4; border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.15s; }
+  .diff-item:hover { border-color: #bfdbfe; }
+  .diff-item.selected { border-color: #2563eb; background: #eff6ff; }
+  .diff-item h4 { font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 4px; }
+  .diff-item p { font-size: 12px; color: #94a3b8; }
+
+  /* Model */
+  .model-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .model-item { border: 2px solid #eef0f4; border-radius: 12px; padding: 16px; cursor: pointer; transition: all 0.15s; position: relative; }
+  .model-item:hover { border-color: #bfdbfe; }
+  .model-item.selected { border-color: #2563eb; background: #eff6ff; }
+  .model-item h4 { font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 4px; }
+  .model-item p { font-size: 12px; color: #94a3b8; }
+  .model-badge { position: absolute; top: -8px; right: 12px; background: #f59e0b; color: white; font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+
+  /* Start Button */
+  .start-section { text-align: center; padding: 8px 0 32px; }
+  .start-btn { background: #2563eb; color: white; padding: 16px 48px; border-radius: 12px; font-size: 16px; font-weight: 600; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+  .start-btn:hover { background: #1d4ed8; }
+
+  /* Summary */
+  .summary-bar { background: white; border: 1px solid #eef0f4; border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; font-size: 13px; color: #64748b; }
+  .summary-bar strong { color: #0f172a; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">MockInterview</div>
+  <nav class="sidebar-nav">
+    <a class="nav-item"><span class="nav-icon">📊</span> 控制台</a>
+    <a class="nav-item active"><span class="nav-icon">🎙️</span> 开始面试</a>
+    <a class="nav-item"><span class="nav-icon">📋</span> 面试记录</a>
+    <a class="nav-item"><span class="nav-icon">📈</span> 成长追踪</a>
+    <a class="nav-item"><span class="nav-icon">⚙️</span> 设置</a>
+  </nav>
+</aside>
+
+<div class="main">
+  <header class="header">
+    <div class="header-title">新建模拟面试</div>
+    <div class="avatar">张</div>
+  </header>
+
+  <div class="content">
+
+    <!-- Step Progress -->
+    <div style="display: flex; align-items: flex-start; gap: 0; margin-bottom: 36px;">
+      <div style="text-align: center; flex: 1;">
+        <div class="step-dot done" style="margin: 0 auto;">1</div>
+        <div class="step-label">选择岗位</div>
+      </div>
+      <div class="step-line done" style="margin-top: 15px;"></div>
+      <div style="text-align: center; flex: 1;">
+        <div class="step-dot done" style="margin: 0 auto;">2</div>
+        <div class="step-label">技术栈</div>
+      </div>
+      <div class="step-line done" style="margin-top: 15px;"></div>
+      <div style="text-align: center; flex: 1;">
+        <div class="step-dot current" style="margin: 0 auto;">3</div>
+        <div class="step-label">难度级别</div>
+      </div>
+      <div class="step-line pending" style="margin-top: 15px;"></div>
+      <div style="text-align: center; flex: 1;">
+        <div class="step-dot pending" style="margin: 0 auto;">4</div>
+        <div class="step-label">AI 模型</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Job Role -->
+    <div class="setup-card">
+      <h3>选择目标岗位</h3>
+      <p class="desc">选择你想模拟面试的技术岗位</p>
+      <div class="role-grid">
+        <div class="role-item selected">
+          <div class="role-icon">🖥️</div>
+          <div class="role-name">前端工程师</div>
+        </div>
+        <div class="role-item">
+          <div class="role-icon">⚙️</div>
+          <div class="role-name">后端工程师</div>
+        </div>
+        <div class="role-item">
+          <div class="role-icon">🔄</div>
+          <div class="role-name">全栈工程师</div>
+        </div>
+        <div class="role-item">
+          <div class="role-icon">🧮</div>
+          <div class="role-name">算法工程师</div>
+        </div>
+        <div class="role-item">
+          <div class="role-icon">📊</div>
+          <div class="role-name">数据工程师</div>
+        </div>
+        <div class="role-item">
+          <div class="role-icon">🚀</div>
+          <div class="role-name">DevOps</div>
+        </div>
+        <div class="role-item">
+          <div class="role-icon">📱</div>
+          <div class="role-name">移动端开发</div>
+        </div>
+        <div class="role-item">
+          <div class="role-icon">🤖</div>
+          <div class="role-name">AI/ML 工程师</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Tech Stack -->
+    <div class="setup-card">
+      <h3>选择技术栈</h3>
+      <p class="desc">选择你希望重点考察的技术方向（可多选）</p>
+      <div class="tech-tags">
+        <span class="tech-tag selected">React</span>
+        <span class="tech-tag selected">TypeScript</span>
+        <span class="tech-tag selected">Next.js</span>
+        <span class="tech-tag">Vue</span>
+        <span class="tech-tag">Angular</span>
+        <span class="tech-tag">CSS/Tailwind</span>
+        <span class="tech-tag">Webpack/Vite</span>
+        <span class="tech-tag">浏览器 API</span>
+      </div>
+    </div>
+
+    <!-- Step 3: Difficulty -->
+    <div class="setup-card">
+      <h3>选择难度级别</h3>
+      <p class="desc">根据你的经验年限选择面试难度</p>
+      <div class="diff-grid">
+        <div class="diff-item">
+          <h4>🌱 初级</h4>
+          <p>0-2 年经验<br>基础概念 + 简单实现</p>
+        </div>
+        <div class="diff-item selected">
+          <h4>🌿 中级</h4>
+          <p>2-5 年经验<br>设计模式 + 系统思维</p>
+        </div>
+        <div class="diff-item">
+          <h4>🌳 高级</h4>
+          <p>5 年以上经验<br>架构设计 + 技术决策</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 4: Model -->
+    <div class="setup-card">
+      <h3>选择 AI 模型</h3>
+      <p class="desc">不同模型有不同的面试风格</p>
+      <div class="model-grid">
+        <div class="model-item selected">
+          <h4>GPT-4o Mini</h4>
+          <p>快速响应，性价比高</p>
+          <span style="display: inline-block; margin-top: 8px; font-size: 11px; color: #22c55e; background: #f0fdf4; padding: 2px 8px; border-radius: 4px;">免费可用</span>
+        </div>
+        <div class="model-item">
+          <h4>GPT-4o</h4>
+          <p>更深入的追问能力</p>
+          <span style="display: inline-block; margin-top: 8px; font-size: 11px; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 4px;">专业版</span>
+        </div>
+        <div class="model-item">
+          <h4>Claude Sonnet</h4>
+          <p>细致的逻辑分析</p>
+          <span style="display: inline-block; margin-top: 8px; font-size: 11px; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 4px;">专业版</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-bar">
+      <span>📋 面试配置：</span>
+      <strong>前端工程师</strong>
+      <span>·</span>
+      <span>React, TypeScript, Next.js</span>
+      <span>·</span>
+      <span>中级</span>
+      <span>·</span>
+      <span>GPT-4o Mini</span>
+      <span>·</span>
+      <span style="color: #94a3b8;">预计 30 分钟</span>
+    </div>
+
+    <!-- Start -->
+    <div class="start-section">
+      <button class="start-btn">
+        🎙️ 开始面试
+      </button>
+      <p style="font-size: 12px; color: #94a3b8; margin-top: 12px;">面试开始后需要开启麦克风权限</p>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

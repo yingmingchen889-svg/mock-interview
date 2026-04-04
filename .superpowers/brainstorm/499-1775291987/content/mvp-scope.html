@@ -1,0 +1,134 @@
+<h2>MVP Scope & Phasing</h2>
+<p class="subtitle">What to build first vs. defer — updated for China market</p>
+
+<div class="section">
+  <h3>Updated Auth & Payment</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <div style="padding: 1.2rem; background: rgba(52,211,153,0.08); border-radius: 12px;">
+      <p style="color: #34d399; font-weight: bold; font-size: 15px; margin-bottom: 0.5rem;">Auth (NextAuth v5)</p>
+      <div style="font-size: 13px; color: #94a3b8; line-height: 2;">
+        Phone number + SMS verification (MVP)<br>
+        Email + password<br>
+        WeChat OAuth login<br>
+        Alipay OAuth login<br>
+        Huawei ID login<br>
+      </div>
+    </div>
+    <div style="padding: 1.2rem; background: rgba(96,165,250,0.08); border-radius: 12px;">
+      <p style="color: #60a5fa; font-weight: bold; font-size: 15px; margin-bottom: 0.5rem;">Payment</p>
+      <div style="font-size: 13px; color: #94a3b8; line-height: 2;">
+        Alipay (via Open Platform SDK)<br>
+        WeChat Pay (via JSAPI/Native)<br>
+        Subscription auto-renewal<br>
+        Currency: CNY (RMB)<br>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 2rem;">
+  <h3>Updated Pricing (CNY)</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem;">
+    <div style="border: 1px solid rgba(148,163,184,0.3); border-radius: 12px; padding: 1.5rem; text-align: center;">
+      <div style="color: #94a3b8; font-weight: bold; font-size: 18px;">FREE</div>
+      <div style="color: #64748b; font-size: 28px; font-weight: bold; margin: 0.5rem 0;">&yen;0</div>
+      <div style="font-size: 13px; color: #94a3b8; text-align: left; line-height: 2;">
+        3 interviews / month<br>
+        GPT-4o-mini only<br>
+        Basic text report<br>
+        No progress tracking
+      </div>
+    </div>
+    <div style="border: 2px solid rgba(96,165,250,0.5); border-radius: 12px; padding: 1.5rem; text-align: center; background: rgba(96,165,250,0.05);">
+      <div style="color: #60a5fa; font-weight: bold; font-size: 18px;">PRO</div>
+      <div style="color: #60a5fa; font-size: 28px; font-weight: bold; margin: 0.5rem 0;">&yen;39/month</div>
+      <div style="font-size: 13px; color: #94a3b8; text-align: left; line-height: 2;">
+        30 interviews / month<br>
+        All models available<br>
+        Detailed report + knowledge points<br>
+        Progress tracking dashboard
+      </div>
+    </div>
+    <div style="border: 2px solid rgba(167,139,250,0.5); border-radius: 12px; padding: 1.5rem; text-align: center; background: rgba(167,139,250,0.05);">
+      <div style="color: #a78bfa; font-weight: bold; font-size: 18px;">PREMIUM</div>
+      <div style="color: #a78bfa; font-size: 28px; font-weight: bold; margin: 0.5rem 0;">&yen;99/month</div>
+      <div style="font-size: 13px; color: #94a3b8; text-align: left; line-height: 2;">
+        Unlimited interviews<br>
+        Priority API + all models<br>
+        Full report + resource links<br>
+        Advanced analytics + resume-based Q
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 2rem;">
+  <h3>MVP Phase 1 (5-7 weeks)</h3>
+  <p class="subtitle">Ship this first to validate the core value proposition</p>
+  <div style="display: grid; grid-template-columns: 1fr; gap: 0.8rem; font-size: 13px;">
+    <div style="padding: 0.8rem 1rem; background: rgba(34,197,94,0.1); border-radius: 8px; border-left: 3px solid #22c55e;">
+      <strong style="color: #22c55e;">Voice Interview Loop</strong> — LiveKit room + Python agent with Deepgram STT + OpenAI GPT-4o-mini + ElevenLabs TTS
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(34,197,94,0.1); border-radius: 8px; border-left: 3px solid #22c55e;">
+      <strong style="color: #22c55e;">Interview Setup</strong> — Select job role, tech stack, difficulty from predefined options
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(34,197,94,0.1); border-radius: 8px; border-left: 3px solid #22c55e;">
+      <strong style="color: #22c55e;">Interview State Machine</strong> — INTRO --> TECHNICAL --> BEHAVIORAL --> Q&A flow with follow-up probing
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(34,197,94,0.1); border-radius: 8px; border-left: 3px solid #22c55e;">
+      <strong style="color: #22c55e;">Post-Interview Report</strong> — Overall score, per-question breakdown, strengths/weaknesses, improvement tips
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(34,197,94,0.1); border-radius: 8px; border-left: 3px solid #22c55e;">
+      <strong style="color: #22c55e;">Basic Auth</strong> — Phone number + email login (defer social logins to Phase 2)
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(34,197,94,0.1); border-radius: 8px; border-left: 3px solid #22c55e;">
+      <strong style="color: #22c55e;">Interview History</strong> — List past interviews with scores
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(34,197,94,0.1); border-radius: 8px; border-left: 3px solid #22c55e;">
+      <strong style="color: #22c55e;">Core Pages</strong> — Landing, Dashboard, Interview Setup/Room/Report, History, Settings
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 1.5rem;">
+  <h3>Phase 2 (post-MVP, +3-4 weeks)</h3>
+  <p class="subtitle">Add monetization and social features</p>
+  <div style="display: grid; grid-template-columns: 1fr; gap: 0.8rem; font-size: 13px;">
+    <div style="padding: 0.8rem 1rem; background: rgba(234,179,8,0.1); border-radius: 8px; border-left: 3px solid #eab308;">
+      <strong style="color: #eab308;">Social Login</strong> — WeChat, Alipay, Huawei ID OAuth integration
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(234,179,8,0.1); border-radius: 8px; border-left: 3px solid #eab308;">
+      <strong style="color: #eab308;">Payment System</strong> — Alipay + WeChat Pay subscription billing
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(234,179,8,0.1); border-radius: 8px; border-left: 3px solid #eab308;">
+      <strong style="color: #eab308;">Multi-Model Switching</strong> — Add Claude Sonnet, GPT-4o as paid tier options
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(234,179,8,0.1); border-radius: 8px; border-left: 3px solid #eab308;">
+      <strong style="color: #eab308;">Progress Tracking</strong> — Skill radar chart, trend lines, weak area highlighting
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(234,179,8,0.1); border-radius: 8px; border-left: 3px solid #eab308;">
+      <strong style="color: #eab308;">Knowledge Points</strong> — Link report findings to learning resources
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 1.5rem;">
+  <h3>Phase 3 (future)</h3>
+  <div style="display: grid; grid-template-columns: 1fr; gap: 0.8rem; font-size: 13px;">
+    <div style="padding: 0.8rem 1rem; background: rgba(148,163,184,0.1); border-radius: 8px; border-left: 3px solid #64748b;">
+      <strong style="color: #64748b;">Mobile App</strong> — React Native / Flutter wrapper for mobile
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(148,163,184,0.1); border-radius: 8px; border-left: 3px solid #64748b;">
+      <strong style="color: #64748b;">Audio Playback</strong> — Review past interviews with audio recording
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(148,163,184,0.1); border-radius: 8px; border-left: 3px solid #64748b;">
+      <strong style="color: #64748b;">Resume Upload</strong> — AI generates custom questions based on resume
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(148,163,184,0.1); border-radius: 8px; border-left: 3px solid #64748b;">
+      <strong style="color: #64748b;">Coding Environment</strong> — Integrated code editor for live coding interviews
+    </div>
+    <div style="padding: 0.8rem 1rem; background: rgba(148,163,184,0.1); border-radius: 8px; border-left: 3px solid #64748b;">
+      <strong style="color: #64748b;">Video Support</strong> — Screen share for system design whiteboard (LiveKit native)
+    </div>
+  </div>
+</div>

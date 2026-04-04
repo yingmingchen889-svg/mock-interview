@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #ffffff; color: #1a1a2e; line-height: 1.6; }
+
+  /* Nav */
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 48px; border-bottom: 1px solid #f0f0f5; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 10; }
+  .nav-logo { font-size: 20px; font-weight: 800; color: #2563eb; letter-spacing: -0.5px; }
+  .nav-links { display: flex; gap: 24px; align-items: center; font-size: 14px; }
+  .nav-links a { color: #64748b; text-decoration: none; }
+  .nav-btn { background: #2563eb; color: white; padding: 8px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 80px 48px 60px; background: linear-gradient(180deg, #f8faff 0%, #ffffff 100%); }
+  .hero-badge { display: inline-block; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 20px; padding: 6px 16px; font-size: 13px; color: #2563eb; margin-bottom: 28px; }
+  .hero h1 { font-size: 46px; font-weight: 800; line-height: 1.2; letter-spacing: -1px; color: #0f172a; }
+  .hero h1 span { color: #2563eb; }
+  .hero p { font-size: 17px; color: #64748b; margin-top: 20px; max-width: 520px; margin-left: auto; margin-right: auto; }
+  .hero-actions { display: flex; gap: 12px; justify-content: center; margin-top: 36px; }
+  .btn-primary { background: #2563eb; color: white; padding: 14px 32px; border-radius: 10px; font-size: 16px; font-weight: 600; text-decoration: none; border: none; cursor: pointer; }
+  .btn-secondary { background: white; color: #374151; padding: 14px 32px; border-radius: 10px; font-size: 16px; border: 1px solid #e5e7eb; text-decoration: none; cursor: pointer; }
+  .hero-note { font-size: 13px; color: #94a3b8; margin-top: 14px; }
+
+  /* Pain Points */
+  .pain-section { padding: 72px 48px; background: #fafbfc; }
+  .section-title { text-align: center; font-size: 30px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+  .section-subtitle { text-align: center; font-size: 15px; color: #64748b; margin-bottom: 48px; max-width: 560px; margin-left: auto; margin-right: auto; }
+  .pain-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 800px; margin: 0 auto; }
+  .pain-card { background: white; border: 1px solid #fee2e2; border-radius: 14px; padding: 24px; }
+  .pain-icon { font-size: 24px; margin-bottom: 12px; }
+  .pain-card h4 { font-size: 15px; font-weight: 600; color: #dc2626; margin-bottom: 6px; }
+  .pain-card p { font-size: 13px; color: #64748b; }
+
+  /* Solution / Highlights */
+  .highlight-section { padding: 72px 48px; }
+  .highlight-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; max-width: 960px; margin: 0 auto; }
+  .highlight-card { background: #f8faff; border: 1px solid #e0e7ff; border-radius: 16px; padding: 32px 24px; text-align: center; }
+  .highlight-card .icon-wrap { width: 56px; height: 56px; background: #eff6ff; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px; }
+  .highlight-card h3 { font-size: 17px; font-weight: 600; color: #0f172a; margin-bottom: 8px; }
+  .highlight-card p { font-size: 13px; color: #64748b; line-height: 1.7; }
+
+  /* How It Works */
+  .steps-section { padding: 72px 48px; background: #fafbfc; }
+  .steps { display: flex; justify-content: center; gap: 40px; max-width: 880px; margin: 0 auto; }
+  .step { text-align: center; flex: 1; position: relative; }
+  .step-num { width: 52px; height: 52px; background: #2563eb; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; margin: 0 auto 16px; }
+  .step h4 { font-size: 16px; font-weight: 600; color: #0f172a; margin-bottom: 6px; }
+  .step p { font-size: 13px; color: #64748b; }
+  .step-arrow { position: absolute; right: -28px; top: 24px; color: #cbd5e1; font-size: 20px; }
+
+  /* Pricing */
+  .pricing-section { padding: 72px 48px; }
+  .pricing-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; max-width: 840px; margin: 0 auto; }
+  .price-card { background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 32px 24px; text-align: center; }
+  .price-card.featured { border: 2px solid #2563eb; position: relative; }
+  .price-card.featured::before { content: "Most Popular"; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #2563eb; color: white; padding: 3px 14px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .price-tier { font-size: 15px; color: #64748b; margin-bottom: 8px; font-weight: 500; }
+  .price-amount { font-size: 40px; font-weight: 800; color: #0f172a; }
+  .price-amount span { font-size: 15px; color: #94a3b8; font-weight: 400; }
+  .price-desc { font-size: 13px; color: #94a3b8; margin-top: 4px; margin-bottom: 24px; }
+  .price-features { text-align: left; font-size: 13px; color: #64748b; line-height: 2.2; }
+  .price-features .check { color: #22c55e; margin-right: 6px; }
+  .price-btn { display: block; margin-top: 24px; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 500; text-align: center; text-decoration: none; }
+  .price-btn-primary { background: #2563eb; color: white; }
+  .price-btn-outline { background: white; color: #374151; border: 1px solid #e5e7eb; }
+
+  /* Footer */
+  .footer { padding: 24px 48px; border-top: 1px solid #f0f0f5; text-align: center; font-size: 13px; color: #94a3b8; }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <div class="nav-logo">MockInterview</div>
+  <div class="nav-links">
+    <a href="#">功能</a>
+    <a href="#">定价</a>
+    <a href="#">登录</a>
+    <a href="#" class="nav-btn">免费开始</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-badge">🎙️ AI 语音模拟面试平台</div>
+  <h1>
+    技术面试不再紧张<br>
+    <span>AI 面试官帮你实战练习</span>
+  </h1>
+  <p>
+    真实语音对话，智能追问与反馈，详尽的面试报告与成长追踪。<br>
+    像真正的面试一样练习，像教练一样帮你提升。
+  </p>
+  <div class="hero-actions">
+    <button class="btn-primary">立即免费体验</button>
+    <button class="btn-secondary">查看演示</button>
+  </div>
+  <p class="hero-note">免费版每月 3 次面试，无需绑定支付方式</p>
+</section>
+
+<!-- Pain Points -->
+<section class="pain-section">
+  <h2 class="section-title">面试准备的常见困境</h2>
+  <p class="section-subtitle">你是否也遇到了这些问题？</p>
+  <div class="pain-grid">
+    <div class="pain-card">
+      <div class="pain-icon">😰</div>
+      <h4>缺乏真实面试练习</h4>
+      <p>刷题背八股只能练知识点，面对真人面试官时表达不清、逻辑混乱、紧张卡壳</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">🤷</div>
+      <h4>找不到人模拟面试</h4>
+      <p>朋友不了解技术深度，同事不方便开口，花钱找面试辅导价格昂贵且时间难约</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">📝</div>
+      <h4>不知道问题出在哪</h4>
+      <p>面完感觉"还行"，但挂了也不知道为什么。缺乏针对性的反馈和改进方向</p>
+    </div>
+    <div class="pain-card">
+      <div class="pain-icon">📉</div>
+      <h4>进步无法量化</h4>
+      <p>准备了很久但不知道自己到底提升了多少，哪些知识点掌握了、哪些还有短板</p>
+    </div>
+  </div>
+</section>
+
+<!-- Highlights -->
+<section class="highlight-section">
+  <h2 class="section-title">为什么选择 MockInterview</h2>
+  <p class="section-subtitle">不只是题库，而是你的 AI 面试教练</p>
+  <div class="highlight-grid">
+    <div class="highlight-card">
+      <div class="icon-wrap">🎙️</div>
+      <h3>真实语音对话</h3>
+      <p>和 AI 面试官进行语音对话，练习口头表达和实时应变能力。延迟低于 1 秒，对话自然流畅</p>
+    </div>
+    <div class="highlight-card">
+      <div class="icon-wrap">🧠</div>
+      <h3>智能追问与引导</h3>
+      <p>答得浅了会追问深入，答得好了会加大难度。遇到困难时给出提示，像真正的资深面试官</p>
+    </div>
+    <div class="highlight-card">
+      <div class="icon-wrap">📊</div>
+      <h3>详尽面试报告</h3>
+      <p>每道题逐一打分，明确指出强项和弱项。附带知识点分析和针对性的改进建议</p>
+    </div>
+    <div class="highlight-card">
+      <div class="icon-wrap">🎯</div>
+      <h3>自定义面试场景</h3>
+      <p>前端、后端、算法、数据、DevOps...选择你的目标岗位、技术栈和难度级别</p>
+    </div>
+    <div class="highlight-card">
+      <div class="icon-wrap">📈</div>
+      <h3>成长追踪</h3>
+      <p>记录每次面试表现，技能雷达图直观展示进步趋势，精准定位薄弱环节</p>
+    </div>
+    <div class="highlight-card">
+      <div class="icon-wrap">🔄</div>
+      <h3>多模型可选</h3>
+      <p>支持 GPT-4o、Claude 等多种 AI 模型，不同模型风格各异，全面锻炼应变能力</p>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="steps-section">
+  <h2 class="section-title">三步开始你的模拟面试</h2>
+  <p class="section-subtitle" style="margin-bottom: 48px;">简单三步，立刻进入面试状态</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>配置面试</h4>
+      <p>选择目标岗位、技术栈和难度级别，1 分钟完成设置</p>
+      <div class="step-arrow">→</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>语音面试</h4>
+      <p>与 AI 面试官进行 30 分钟的语音对话，包含技术题和行为题</p>
+      <div class="step-arrow">→</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>查看报告</h4>
+      <p>获得逐题评分、优劣势分析和个性化提升建议</p>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing-section">
+  <h2 class="section-title">定价方案</h2>
+  <p class="section-subtitle">免费开始，按需升级</p>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tier">免费版</div>
+      <div class="price-amount">¥0</div>
+      <div class="price-desc">永久免费</div>
+      <div class="price-features">
+        <div><span class="check">✓</span>每月 3 次面试</div>
+        <div><span class="check">✓</span>GPT-4o-mini 模型</div>
+        <div><span class="check">✓</span>基础文字报告</div>
+      </div>
+      <a href="#" class="price-btn price-btn-outline">免费注册</a>
+    </div>
+    <div class="price-card featured">
+      <div class="price-tier">专业版</div>
+      <div class="price-amount">¥39<span>/月</span></div>
+      <div class="price-desc">适合求职准备期</div>
+      <div class="price-features">
+        <div><span class="check">✓</span>每月 30 次面试</div>
+        <div><span class="check">✓</span>全部 AI 模型可选</div>
+        <div><span class="check">✓</span>详细报告 + 知识点分析</div>
+        <div><span class="check">✓</span>成长追踪仪表盘</div>
+      </div>
+      <a href="#" class="price-btn price-btn-primary">开始试用</a>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">旗舰版</div>
+      <div class="price-amount">¥99<span>/月</span></div>
+      <div class="price-desc">适合长期提升</div>
+      <div class="price-features">
+        <div><span class="check">✓</span>无限次面试</div>
+        <div><span class="check">✓</span>优先 API 通道</div>
+        <div><span class="check">✓</span>完整报告 + 学习资源</div>
+        <div><span class="check">✓</span>高级数据分析</div>
+        <div><span class="check">✓</span>简历定制面试题</div>
+      </div>
+      <a href="#" class="price-btn price-btn-outline">开始试用</a>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  MockInterview — AI 语音模拟面试平台 · 让每一次面试都有准备
+</footer>
+
+</body>
+</html>

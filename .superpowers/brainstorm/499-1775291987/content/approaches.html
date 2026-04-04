@@ -1,0 +1,102 @@
+<h2>Technical Approach Selection</h2>
+<p class="subtitle">Choose the architecture for your voice-based mock interview app</p>
+
+<div class="options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>Pipeline Assembler</h3>
+      <p><strong>Deepgram STT + Vercel AI SDK + ElevenLabs TTS</strong></p>
+      <p>Discrete best-in-class services assembled via WebSocket. Single Next.js monolith, TypeScript only.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Single language (TypeScript)</li>
+            <li>Simple deployment (Vercel)</li>
+            <li>Full multi-model parity</li>
+            <li>Low vendor lock-in</li>
+            <li>MVP: 4-6 weeks</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Latency ~1.0-1.3s (3 network hops)</li>
+            <li>Interruption handling is manual</li>
+            <li>Hard to add video later</li>
+          </ul>
+        </div>
+      </div>
+      <p><strong>Cost/interview:</strong> ~$1-2.50</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>Native Realtime (OpenAI)</h3>
+      <p><strong>OpenAI Realtime API via WebRTC (speech-to-speech)</strong></p>
+      <p>Single API handles STT+LLM+TTS. Lowest latency for OpenAI models, but needs fallback pipeline for others.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Best latency ~400-600ms</li>
+            <li>Simplest primary path</li>
+            <li>Built-in interruption handling</li>
+            <li>MVP: 3-5 weeks</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>High vendor lock-in (OpenAI)</li>
+            <li>Non-OpenAI models get worse UX</li>
+            <li>Dual pipeline = double complexity</li>
+            <li>Cost: ~$3.60+/interview</li>
+          </ul>
+        </div>
+      </div>
+      <p><strong>Cost/interview:</strong> ~$3.60+</p>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>LiveKit Orchestrator</h3>
+      <p><strong>LiveKit Agents (Python) + WebRTC SFU</strong></p>
+      <p>Open-source voice infra. Python agent handles STT/LLM/TTS pipeline with production-grade turn-taking and interruption.</p>
+      <div class="pros-cons">
+        <div class="pros">
+          <h4>Pros</h4>
+          <ul>
+            <li>Best multi-model support</li>
+            <li>Built-in interruption handling</li>
+            <li>Native video support (future)</li>
+            <li>Low cost, low lock-in</li>
+            <li>Latency ~750-950ms</li>
+          </ul>
+        </div>
+        <div class="cons">
+          <h4>Cons</h4>
+          <ul>
+            <li>Two languages (TS + Python)</li>
+            <li>Two services to deploy</li>
+            <li>Most complex architecture</li>
+            <li>MVP: 5-7 weeks</li>
+          </ul>
+        </div>
+      </div>
+      <p><strong>Cost/interview:</strong> ~$1-2.50</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 2rem; padding: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 12px;">
+  <h3>Recommendation</h3>
+  <p><strong>Best long-term product:</strong> C (LiveKit) -- production-grade voice infra, true multi-model parity, future video support</p>
+  <p><strong>Fastest to ship:</strong> A (Pipeline) -- single language, simple deployment, good enough latency for MVP</p>
+  <p><strong>Best latency (OpenAI only):</strong> B (Realtime) -- but high cost and vendor lock-in make it risky as foundation</p>
+</div>

@@ -1,0 +1,124 @@
+<h2>Voice Pipeline & Interview Flow</h2>
+<p class="subtitle">How the real-time voice conversation works end-to-end</p>
+
+<div class="mockup">
+  <div class="mockup-header">Voice Pipeline (per utterance)</div>
+  <div class="mockup-body" style="padding: 2rem;">
+    <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 13px; justify-content: center;">
+      <div style="background: #1e3a5f; padding: 0.6rem 1rem; border-radius: 8px; color: #60a5fa; white-space: nowrap;">User Speaks</div>
+      <span style="color: #475569;">--></span>
+      <div style="background: #1e3a5f; padding: 0.6rem 1rem; border-radius: 8px; color: #60a5fa; white-space: nowrap;">WebRTC ~50ms</div>
+      <span style="color: #475569;">--></span>
+      <div style="background: #1a2e1a; padding: 0.6rem 1rem; border-radius: 8px; color: #34d399; white-space: nowrap;">VAD Detection ~100ms</div>
+      <span style="color: #475569;">--></span>
+      <div style="background: #1a2e1a; padding: 0.6rem 1rem; border-radius: 8px; color: #34d399; white-space: nowrap;">Deepgram STT ~300ms</div>
+      <span style="color: #475569;">--></span>
+      <div style="background: #2d1a3e; padding: 0.6rem 1rem; border-radius: 8px; color: #a78bfa; white-space: nowrap;">LLM ~200ms</div>
+      <span style="color: #475569;">--></span>
+      <div style="background: #3e2a1a; padding: 0.6rem 1rem; border-radius: 8px; color: #fb923c; white-space: nowrap;">TTS ~200ms</div>
+      <span style="color: #475569;">--></span>
+      <div style="background: #1e3a5f; padding: 0.6rem 1rem; border-radius: 8px; color: #60a5fa; white-space: nowrap;">WebRTC ~50ms</div>
+      <span style="color: #475569;">--></span>
+      <div style="background: #1e3a5f; padding: 0.6rem 1rem; border-radius: 8px; color: #60a5fa; white-space: nowrap;">User Hears</div>
+    </div>
+    <p style="text-align: center; margin-top: 1rem; color: #64748b; font-size: 13px;">Total latency: ~750-950ms (conversational feel)</p>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 2rem;">
+  <h3>Key Voice Features</h3>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <div style="padding: 1rem; background: rgba(52,211,153,0.08); border-radius: 8px;">
+      <p style="color: #34d399; font-weight: bold;">Interruption Handling</p>
+      <p style="font-size: 13px;">When user starts speaking while AI is talking, the agent stops mid-sentence and listens. LiveKit Agents SDK handles this natively via VAD + audio track muting.</p>
+    </div>
+    <div style="padding: 1rem; background: rgba(96,165,250,0.08); border-radius: 8px;">
+      <p style="color: #60a5fa; font-weight: bold;">Streaming Pipeline</p>
+      <p style="font-size: 13px;">LLM tokens stream into TTS in sentence chunks. Audio playback starts before full response is generated. No waiting for complete answer.</p>
+    </div>
+    <div style="padding: 1rem; background: rgba(167,139,250,0.08); border-radius: 8px;">
+      <p style="color: #a78bfa; font-weight: bold;">Turn Detection</p>
+      <p style="font-size: 13px;">Silero VAD (built into LiveKit) detects end-of-speech accurately. Handles pauses, filler words ("um", "uh"), and thinking silences without cutting off the user.</p>
+    </div>
+    <div style="padding: 1rem; background: rgba(251,146,60,0.08); border-radius: 8px;">
+      <p style="color: #fb923c; font-weight: bold;">Transcript Capture</p>
+      <p style="font-size: 13px;">Both user and AI utterances are captured with timestamps. Full transcript is sent to Next.js API on session end for report generation and storage.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 2rem;">
+  <h3>Interview State Machine</h3>
+  <div class="mockup">
+    <div class="mockup-header">Interview Phases</div>
+    <div class="mockup-body" style="padding: 1.5rem;">
+      <div style="display: flex; align-items: center; gap: 0.3rem; flex-wrap: wrap; font-size: 13px; justify-content: center;">
+        <div style="background: #1a2e1a; padding: 0.8rem 1.2rem; border-radius: 8px; text-align: center; min-width: 120px;">
+          <div style="color: #34d399; font-weight: bold;">INTRO</div>
+          <div style="color: #64748b; font-size: 11px; margin-top: 4px;">Self-introduction<br>Warm-up chat<br>~2 min</div>
+        </div>
+        <span style="color: #475569; font-size: 18px;">--></span>
+        <div style="background: #2d1a3e; padding: 0.8rem 1.2rem; border-radius: 8px; text-align: center; min-width: 120px;">
+          <div style="color: #a78bfa; font-weight: bold;">TECHNICAL</div>
+          <div style="color: #64748b; font-size: 11px; margin-top: 4px;">Core questions<br>Follow-up probes<br>~20 min</div>
+        </div>
+        <span style="color: #475569; font-size: 18px;">--></span>
+        <div style="background: #3e2a1a; padding: 0.8rem 1.2rem; border-radius: 8px; text-align: center; min-width: 120px;">
+          <div style="color: #fb923c; font-weight: bold;">BEHAVIORAL</div>
+          <div style="color: #64748b; font-size: 11px; margin-top: 4px;">STAR method<br>Situational Q&A<br>~5 min</div>
+        </div>
+        <span style="color: #475569; font-size: 18px;">--></span>
+        <div style="background: #1e3a5f; padding: 0.8rem 1.2rem; border-radius: 8px; text-align: center; min-width: 120px;">
+          <div style="color: #60a5fa; font-weight: bold;">Q&A</div>
+          <div style="color: #64748b; font-size: 11px; margin-top: 4px;">User asks questions<br>"Reverse interview"<br>~3 min</div>
+        </div>
+        <span style="color: #475569; font-size: 18px;">--></span>
+        <div style="background: #1a1a2e; padding: 0.8rem 1.2rem; border-radius: 8px; text-align: center; min-width: 120px;">
+          <div style="color: #e2e8f0; font-weight: bold;">REPORT</div>
+          <div style="color: #64748b; font-size: 11px; margin-top: 4px;">AI generates<br>comprehensive report<br>async</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 2rem;">
+  <h3>AI Prompt Architecture (layered)</h3>
+  <div style="font-size: 13px;">
+    <div style="padding: 1rem; border-left: 3px solid #34d399; margin-bottom: 0.8rem; background: rgba(52,211,153,0.05); border-radius: 0 8px 8px 0;">
+      <strong style="color: #34d399;">Layer 1 - System Persona</strong><br>
+      "You are a senior technical interviewer at a top tech company. You are professional, encouraging but rigorous. You probe deeply on weak answers and acknowledge strong ones."
+    </div>
+    <div style="padding: 1rem; border-left: 3px solid #60a5fa; margin-bottom: 0.8rem; background: rgba(96,165,250,0.05); border-radius: 0 8px 8px 0;">
+      <strong style="color: #60a5fa;">Layer 2 - Job Config</strong><br>
+      Role: Senior Frontend Engineer | Stack: React, TypeScript, Next.js | Level: 3-5 YOE | Focus: System design + React internals
+    </div>
+    <div style="padding: 1rem; border-left: 3px solid #a78bfa; margin-bottom: 0.8rem; background: rgba(167,139,250,0.05); border-radius: 0 8px 8px 0;">
+      <strong style="color: #a78bfa;">Layer 3 - Session State</strong><br>
+      Current phase: TECHNICAL | Questions asked: 3/8 | Running assessment: strong on React hooks, weak on performance optimization
+    </div>
+    <div style="padding: 1rem; border-left: 3px solid #fb923c; background: rgba(251,146,60,0.05); border-radius: 0 8px 8px 0;">
+      <strong style="color: #fb923c;">Layer 4 - Evaluation (post-interview)</strong><br>
+      Injected for report generation: detailed rubric, scoring criteria, knowledge point mapping, improvement suggestions
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top: 2rem;">
+  <h3>Follow-up Question Logic</h3>
+  <p style="font-size: 13px; color: #94a3b8;">The AI interviewer dynamically decides next actions based on the answer quality:</p>
+  <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+    <div style="padding: 1rem; background: rgba(239,68,68,0.08); border-radius: 8px; text-align: center;">
+      <p style="color: #ef4444; font-weight: bold; font-size: 14px;">Weak Answer</p>
+      <p style="font-size: 12px; color: #94a3b8;">Give hints, rephrase question, simplify to test baseline understanding</p>
+    </div>
+    <div style="padding: 1rem; background: rgba(234,179,8,0.08); border-radius: 8px; text-align: center;">
+      <p style="color: #eab308; font-weight: bold; font-size: 14px;">Partial Answer</p>
+      <p style="font-size: 12px; color: #94a3b8;">Ask targeted follow-up to probe specific gaps, test edge cases</p>
+    </div>
+    <div style="padding: 1rem; background: rgba(34,197,94,0.08); border-radius: 8px; text-align: center;">
+      <p style="color: #22c55e; font-weight: bold; font-size: 14px;">Strong Answer</p>
+      <p style="font-size: 12px; color: #94a3b8;">Increase difficulty, explore advanced topics, move to next question</p>
+    </div>
+  </div>
+</div>

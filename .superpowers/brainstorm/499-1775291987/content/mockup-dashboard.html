@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif; background: #f8f9fb; color: #1a1a2e; display: flex; min-height: 100vh; }
+
+  /* Sidebar */
+  .sidebar { width: 240px; background: white; border-right: 1px solid #eef0f4; padding: 0; flex-shrink: 0; }
+  .sidebar-logo { padding: 20px 24px; font-size: 18px; font-weight: 800; color: #2563eb; border-bottom: 1px solid #eef0f4; }
+  .sidebar-nav { padding: 16px 12px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; font-size: 14px; color: #64748b; margin-bottom: 4px; cursor: pointer; text-decoration: none; }
+  .nav-item:hover { background: #f1f5f9; }
+  .nav-item.active { background: #eff6ff; color: #2563eb; font-weight: 600; }
+  .nav-icon { width: 20px; text-align: center; }
+
+  /* Main */
+  .main { flex: 1; display: flex; flex-direction: column; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; background: white; border-bottom: 1px solid #eef0f4; }
+  .header-title { font-size: 18px; font-weight: 600; color: #0f172a; }
+  .header-user { display: flex; align-items: center; gap: 10px; }
+  .avatar { width: 32px; height: 32px; background: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #2563eb; font-weight: 600; }
+
+  .content { padding: 32px; flex: 1; overflow-y: auto; }
+
+  /* Stats */
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+  .stat-card { background: white; border: 1px solid #eef0f4; border-radius: 12px; padding: 20px; }
+  .stat-label { font-size: 13px; color: #94a3b8; margin-bottom: 6px; }
+  .stat-value { font-size: 28px; font-weight: 700; color: #0f172a; }
+  .stat-sub { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+  .stat-up { color: #22c55e; }
+
+  /* Two-column layout */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+
+  /* Quick Start */
+  .quick-start { background: linear-gradient(135deg, #2563eb, #7c3aed); border-radius: 16px; padding: 32px; color: white; }
+  .quick-start h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .quick-start p { font-size: 14px; opacity: 0.85; margin-bottom: 20px; line-height: 1.6; }
+  .quick-start-btn { background: white; color: #2563eb; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none; }
+
+  /* Skill Radar */
+  .skill-card { background: white; border: 1px solid #eef0f4; border-radius: 16px; padding: 24px; }
+  .skill-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 20px; color: #0f172a; }
+  .radar-placeholder { width: 100%; aspect-ratio: 1; background: #f8f9fb; border-radius: 12px; display: flex; align-items: center; justify-content: center; position: relative; }
+  .radar-labels { position: absolute; width: 100%; height: 100%; }
+  .radar-label { position: absolute; font-size: 11px; color: #64748b; }
+  .radar-center { width: 60%; height: 60%; background: rgba(37,99,235,0.08); border: 2px solid rgba(37,99,235,0.3); border-radius: 50%; position: absolute; top: 20%; left: 20%; }
+  .radar-inner { width: 40%; height: 40%; background: rgba(37,99,235,0.15); border: 2px solid rgba(37,99,235,0.5); border-radius: 50%; position: absolute; top: 30%; left: 30%; }
+
+  /* Recent Interviews */
+  .recent-card { background: white; border: 1px solid #eef0f4; border-radius: 16px; padding: 24px; }
+  .recent-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #0f172a; display: flex; justify-content: space-between; align-items: center; }
+  .recent-card h3 a { font-size: 13px; color: #2563eb; font-weight: 500; text-decoration: none; }
+  .interview-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
+  .interview-item:last-child { border-bottom: none; }
+  .interview-info h4 { font-size: 14px; font-weight: 500; color: #0f172a; }
+  .interview-info p { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .interview-meta { display: flex; align-items: center; gap: 10px; }
+  .score-badge { font-size: 14px; font-weight: 700; }
+  .score-high { color: #22c55e; }
+  .score-mid { color: #eab308; }
+  .score-low { color: #ef4444; }
+  .status-badge { font-size: 11px; padding: 3px 10px; border-radius: 6px; font-weight: 500; }
+  .status-completed { background: #f0fdf4; color: #16a34a; }
+  .status-progress { background: #eff6ff; color: #2563eb; }
+
+  /* Weekly Tip */
+  .tip-card { background: white; border: 1px solid #eef0f4; border-radius: 16px; padding: 24px; }
+  .tip-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #0f172a; }
+  .tip-content { background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 16px; font-size: 13px; color: #92400e; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar-logo">MockInterview</div>
+  <nav class="sidebar-nav">
+    <a class="nav-item active">
+      <span class="nav-icon">📊</span> 控制台
+    </a>
+    <a class="nav-item">
+      <span class="nav-icon">🎙️</span> 开始面试
+    </a>
+    <a class="nav-item">
+      <span class="nav-icon">📋</span> 面试记录
+    </a>
+    <a class="nav-item">
+      <span class="nav-icon">📈</span> 成长追踪
+    </a>
+    <a class="nav-item" style="margin-top: auto;">
+      <span class="nav-icon">⚙️</span> 设置
+    </a>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-title">控制台</div>
+    <div class="header-user">
+      <span style="font-size: 13px; color: #64748b;">张小明</span>
+      <div class="avatar">张</div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- Stats Row -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">本月面试次数</div>
+        <div class="stat-value">7</div>
+        <div class="stat-sub stat-up">↑ 3 vs 上月</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">平均得分</div>
+        <div class="stat-value">72</div>
+        <div class="stat-sub stat-up">↑ 8 分 vs 上月</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">最佳得分</div>
+        <div class="stat-value">89</div>
+        <div class="stat-sub">Frontend Engineer</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">本月剩余次数</div>
+        <div class="stat-value">23</div>
+        <div class="stat-sub">PRO · 30次/月</div>
+      </div>
+    </div>
+
+    <!-- Quick Start + Skill Radar -->
+    <div class="two-col">
+      <div class="quick-start">
+        <h3>🎙️ 开始新的模拟面试</h3>
+        <p>选择你的目标岗位和技术栈，与 AI 面试官进行一场真实的语音面试。每次练习都是一次提升的机会。</p>
+        <button class="quick-start-btn">
+          开始面试 →
+        </button>
+      </div>
+      <div class="skill-card">
+        <h3>技能雷达</h3>
+        <div class="radar-placeholder">
+          <div class="radar-center"></div>
+          <div class="radar-inner"></div>
+          <div class="radar-labels">
+            <span class="radar-label" style="top: 5%; left: 50%; transform: translateX(-50%);">React</span>
+            <span class="radar-label" style="top: 25%; right: 8%;">TypeScript</span>
+            <span class="radar-label" style="bottom: 25%; right: 8%;">系统设计</span>
+            <span class="radar-label" style="bottom: 5%; left: 50%; transform: translateX(-50%);">性能优化</span>
+            <span class="radar-label" style="bottom: 25%; left: 8%;">CSS/布局</span>
+            <span class="radar-label" style="top: 25%; left: 8%;">算法</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Interviews -->
+    <div class="two-col">
+      <div class="recent-card">
+        <h3>最近面试 <a href="#">查看全部 →</a></h3>
+        <div class="interview-item">
+          <div class="interview-info">
+            <h4>Frontend Engineer</h4>
+            <p>React, TypeScript · Mid · 25 分钟</p>
+          </div>
+          <div class="interview-meta">
+            <span class="score-badge score-high">89</span>
+            <span class="status-badge status-completed">已完成</span>
+          </div>
+        </div>
+        <div class="interview-item">
+          <div class="interview-info">
+            <h4>Full Stack Engineer</h4>
+            <p>Node.js, PostgreSQL · Senior · 28 分钟</p>
+          </div>
+          <div class="interview-meta">
+            <span class="score-badge score-mid">68</span>
+            <span class="status-badge status-completed">已完成</span>
+          </div>
+        </div>
+        <div class="interview-item">
+          <div class="interview-info">
+            <h4>Backend Engineer</h4>
+            <p>Go, gRPC · Mid · 进行中</p>
+          </div>
+          <div class="interview-meta">
+            <span class="status-badge status-progress">进行中</span>
+          </div>
+        </div>
+        <div class="interview-item">
+          <div class="interview-info">
+            <h4>Frontend Engineer</h4>
+            <p>Vue, CSS · Junior · 22 分钟</p>
+          </div>
+          <div class="interview-meta">
+            <span class="score-badge score-mid">73</span>
+            <span class="status-badge status-completed">已完成</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tip -->
+      <div class="tip-card">
+        <h3>💡 面试技巧</h3>
+        <div class="tip-content">
+          <strong>回答技术题时使用 "PREP" 结构：</strong><br><br>
+          <strong>P</strong>oint（观点）— 先给出结论<br>
+          <strong>R</strong>eason（原因）— 解释为什么<br>
+          <strong>E</strong>xample（举例）— 用实际经验佐证<br>
+          <strong>P</strong>oint（总结）— 回到结论<br><br>
+          这样回答条理清晰，面试官能快速抓住你的核心思路。
+        </div>
+        <div style="margin-top: 16px;">
+          <h4 style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">你的薄弱项</h4>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <span style="background: #fef2f2; color: #dc2626; padding: 4px 12px; border-radius: 6px; font-size: 12px;">性能优化</span>
+            <span style="background: #fef2f2; color: #dc2626; padding: 4px 12px; border-radius: 6px; font-size: 12px;">系统设计</span>
+            <span style="background: #fffbeb; color: #d97706; padding: 4px 12px; border-radius: 6px; font-size: 12px;">TypeScript 高级类型</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
