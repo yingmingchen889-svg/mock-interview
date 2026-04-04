@@ -1,0 +1,161 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum SubscriptionTier {
+  FREE
+  PRO
+  PREMIUM
+}
+
+enum Difficulty {
+  JUNIOR
+  MID
+  SENIOR
+}
+
+enum InterviewStatus {
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TranscriptRole {
+  USER
+  AI
+}
+
+enum InterviewPhase {
+  INTRO
+  TECHNICAL
+  BEHAVIORAL
+  QA
+}
+
+model User {
+  id                String           @id @default(uuid())
+  email             String?          @unique
+  phone             String?          @unique
+  name              String
+  avatarUrl         String?
+  passwordHash      String?
+  subscriptionTier  SubscriptionTier @default(FREE)
+  preferredModel    String           @default("gpt-4o-mini")
+  preferredLanguage String           @default("zh")
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  interviews    Interview[]
+  accounts      Account[]
+  sessions      Session[]
+  skillProgress SkillProgress[]
+  subscriptions Subscription[]
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Interview {
+  id              String          @id @default(uuid())
+  userId          String
+  jobRole         String
+  techStack       String[]
+  difficulty      Difficulty
+  modelUsed       String
+  status          InterviewStatus @default(IN_PROGRESS)
+  durationSeconds Int?
+  livekitRoomId   String?
+  createdAt       DateTime        @default(now())
+  completedAt     DateTime?
+
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transcripts Transcript[]
+  report      Report?
+}
+
+model Transcript {
+  id            String         @id @default(uuid())
+  interviewId   String
+  role          TranscriptRole
+  content       String
+  phase         InterviewPhase
+  startTime     DateTime
+  endTime       DateTime?
+  questionIndex Int?
+
+  interview Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+}
+
+model Report {
+  id                     String   @id @default(uuid())
+  interviewId            String   @unique
+  overallScore           Int
+  summary                String
+  strengths              Json
+  weaknesses             Json
+  questionScores         Json
+  knowledgePoints        Json
+  improvementSuggestions String[]
+  createdAt              DateTime @default(now())
+
+  interview Interview @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+}
+
+model SkillProgress {
+  id             String   @id @default(uuid())
+  userId         String
+  skillName      String
+  category       String
+  currentScore   Int      @default(0)
+  history        Json     @default("[]")
+  lastAssessedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, skillName])
+}
+
+model Subscription {
+  id                 String           @id @default(uuid())
+  userId             String
+  tier               SubscriptionTier
+  paymentChannel     String
+  tradeNo            String?
+  status             String           @default("ACTIVE")
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  autoRenew          Boolean          @default(true)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
