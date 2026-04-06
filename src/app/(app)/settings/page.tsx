@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
-import { MODEL_OPTIONS } from "@/lib/interview-config";
 
 const LANGUAGE_OPTIONS = [
   { value: "zh", label: "中文" },
@@ -29,8 +28,10 @@ export default function SettingsPage() {
     },
   });
 
+  const { data: availableModels = [] } = trpc.user.availableModels.useQuery();
+
   const [name, setName] = useState("");
-  const [preferredModel, setPreferredModel] = useState("gpt-4o-mini");
+  const [preferredModel, setPreferredModel] = useState("");
   const [preferredLanguage, setPreferredLanguage] = useState("zh");
 
   useEffect(() => {
@@ -105,32 +106,36 @@ export default function SettingsPage() {
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label>默认 AI 模型</Label>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-              {MODEL_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  onClick={() => setPreferredModel(opt.value)}
-                  className={cn(
-                    "rounded-lg border p-3 text-left transition-all",
-                    preferredModel === opt.value
-                      ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
-                      : "hover:border-gray-300"
-                  )}
-                >
-                  <div className="flex items-center gap-1">
-                    <p className="text-sm font-medium">{opt.label}</p>
-                    {opt.tier === "PRO" && (
-                      <Badge variant="secondary" className="text-xs">
-                        PRO
-                      </Badge>
+            {availableModels.length === 0 ? (
+              <p className="text-sm text-gray-500">暂无可用模型</p>
+            ) : (
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+                {availableModels.map((opt) => (
+                  <button
+                    key={opt.id}
+                    onClick={() => setPreferredModel(opt.id)}
+                    className={cn(
+                      "rounded-lg border p-3 text-left transition-all",
+                      preferredModel === opt.id
+                        ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
+                        : "hover:border-gray-300"
                     )}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-0.5">
-                    {opt.description}
-                  </p>
-                </button>
-              ))}
-            </div>
+                  >
+                    <div className="flex items-center gap-1">
+                      <p className="text-sm font-medium">{opt.label}</p>
+                      {opt.tier === "PRO" && (
+                        <Badge variant="secondary" className="text-xs">
+                          PRO
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {opt.description}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <Separator />
