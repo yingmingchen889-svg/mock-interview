@@ -6,7 +6,10 @@ let _openai: OpenAI | null = null;
 
 function getOpenAI(): OpenAI {
   if (!_openai) {
-    _openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    _openai = new OpenAI({
+      apiKey: process.env.LLM_API_KEY || process.env.OPENAI_API_KEY,
+      baseURL: process.env.LLM_BASE_URL || "https://api.deepseek.com",
+    });
   }
   return _openai;
 }
@@ -27,7 +30,7 @@ export async function generateReport(
   const prompt = buildEvaluationPrompt(jobRole, techStack, difficulty, transcripts);
 
   const response = await getOpenAI().chat.completions.create({
-    model: "gpt-4o-mini",
+    model: process.env.LLM_MODEL || "deepseek-chat",
     messages: [
       {
         role: "system",

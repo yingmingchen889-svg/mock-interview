@@ -95,8 +95,9 @@ async def entrypoint(ctx: JobContext) -> None:
             language="zh",
         ),
         llm=openai.LLM(
-            api_key=Config.OPENAI_API_KEY,
-            model=model_name,
+            api_key=Config.LLM_API_KEY or Config.OPENAI_API_KEY,
+            base_url=Config.LLM_BASE_URL or "https://api.deepseek.com",
+            model=Config.LLM_MODEL or model_name,
         ),
         tts=elevenlabs.TTS(
             api_key=Config.ELEVENLABS_API_KEY,
