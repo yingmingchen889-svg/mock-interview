@@ -69,7 +69,8 @@ export const reportRouter = router({
         interview.jobRole,
         interview.techStack,
         interview.difficulty as Difficulty,
-        transcriptEntries
+        transcriptEntries,
+        interview.modelUsed
       );
 
       const report = await db.report.create({

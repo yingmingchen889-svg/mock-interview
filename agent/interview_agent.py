@@ -31,6 +31,30 @@ from transcript_store import TranscriptStore
 
 logger = logging.getLogger("interview-agent")
 
+# Model -> provider mapping
+_MODEL_PROVIDERS: dict[str, dict[str, str]] = {
+    "deepseek-chat":     {"api_key_attr": "DEEPSEEK_API_KEY", "base_url": "https://api.deepseek.com/v1"},
+    "deepseek-reasoner": {"api_key_attr": "DEEPSEEK_API_KEY", "base_url": "https://api.deepseek.com/v1"},
+    "gpt-4o-mini":       {"api_key_attr": "OPENAI_API_KEY",   "base_url": "https://api.openai.com/v1"},
+    "gpt-4o":            {"api_key_attr": "OPENAI_API_KEY",   "base_url": "https://api.openai.com/v1"},
+    "claude-sonnet":     {"api_key_attr": "ANTHROPIC_API_KEY", "base_url": "https://api.anthropic.com/v1"},
+}
+
+
+def _create_llm(model_name: str) -> openai.LLM:
+    """Create an OpenAI-compatible LLM client based on the model name."""
+    provider_info = _MODEL_PROVIDERS.get(model_name)
+    if provider_info:
+        api_key = getattr(Config, provider_info["api_key_attr"], "")
+        base_url = provider_info["base_url"]
+    else:
+        # Unknown model — try DeepSeek as default fallback
+        api_key = Config.DEEPSEEK_API_KEY or Config.OPENAI_API_KEY
+        base_url = "https://api.deepseek.com/v1"
+        logger.warning("Unknown model %s, falling back to DeepSeek", model_name)
+
+    return openai.LLM(api_key=api_key, base_url=base_url, model=model_name)
+
 
 def _parse_room_metadata(metadata: str) -> dict[str, str]:
     """Parse ``jobRole|techStack|difficulty|model|interviewId`` from room metadata."""
@@ -94,11 +118,7 @@ async def entrypoint(ctx: JobContext) -> None:
             api_key=Config.DEEPGRAM_API_KEY,
             language="zh",
         ),
-        llm=openai.LLM(
-            api_key=Config.LLM_API_KEY or Config.OPENAI_API_KEY,
-            base_url=Config.LLM_BASE_URL or "https://api.deepseek.com",
-            model=Config.LLM_MODEL or model_name,
-        ),
+        llm=_create_llm(model_name),
         tts=elevenlabs.TTS(
             api_key=Config.ELEVENLABS_API_KEY,
         ),

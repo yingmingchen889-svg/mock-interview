@@ -1,17 +1,19 @@
 import OpenAI from "openai";
 import { buildEvaluationPrompt } from "@/lib/prompts/evaluation";
+import { getProviderForModel, getProviderApiKey, getAvailableModels } from "@/lib/llm-providers";
 import type { Difficulty, InterviewPhase, ReportData } from "@/types/interview";
 
-let _openai: OpenAI | null = null;
+/** Cache OpenAI clients per provider to reuse connections */
+const _clients = new Map<string, OpenAI>();
 
-function getOpenAI(): OpenAI {
-  if (!_openai) {
-    _openai = new OpenAI({
-      apiKey: process.env.LLM_API_KEY || process.env.OPENAI_API_KEY,
-      baseURL: process.env.LLM_BASE_URL || "https://api.deepseek.com",
-    });
+function getClient(providerKey: string, baseURL: string): OpenAI {
+  let client = _clients.get(providerKey);
+  if (!client) {
+    const apiKey = getProviderApiKey(providerKey);
+    client = new OpenAI({ apiKey, baseURL });
+    _clients.set(providerKey, client);
   }
-  return _openai;
+  return client;
 }
 
 interface TranscriptEntry {
@@ -25,12 +27,37 @@ export async function generateReport(
   jobRole: string,
   techStack: string[],
   difficulty: Difficulty,
-  transcripts: TranscriptEntry[]
+  transcripts: TranscriptEntry[],
+  modelId?: string
 ): Promise<ReportData> {
+  // Resolve which provider and model to use
+  let resolvedModelId = modelId || "";
+  let providerKey = "";
+  let baseURL = "";
+
+  const match = resolvedModelId ? getProviderForModel(resolvedModelId) : null;
+
+  if (match) {
+    providerKey = match.provider.key;
+    baseURL = match.provider.baseURL;
+  } else {
+    // Fall back to the first available model
+    const available = getAvailableModels();
+    if (available.length === 0) {
+      throw new Error("No LLM providers configured. Please set an API key in .env.local");
+    }
+    const fallback = getProviderForModel(available[0].id);
+    if (!fallback) throw new Error("Failed to resolve fallback model");
+    resolvedModelId = available[0].id;
+    providerKey = fallback.provider.key;
+    baseURL = fallback.provider.baseURL;
+  }
+
+  const client = getClient(providerKey, baseURL);
   const prompt = buildEvaluationPrompt(jobRole, techStack, difficulty, transcripts);
 
-  const response = await getOpenAI().chat.completions.create({
-    model: process.env.LLM_MODEL || "deepseek-chat",
+  const response = await client.chat.completions.create({
+    model: resolvedModelId,
     messages: [
       {
         role: "system",
@@ -48,12 +75,9 @@ export async function generateReport(
     throw new Error("Empty response from evaluation model");
   }
 
-  // Strip markdown fences if the model includes them despite instructions
   const cleaned = content.replace(/^```(?:json)?\s*\n?/m, "").replace(/\n?```\s*$/m, "");
-
   const parsed = JSON.parse(cleaned) as ReportData;
 
-  // Basic validation
   if (
     typeof parsed.overallScore !== "number" ||
     !Array.isArray(parsed.strengths) ||

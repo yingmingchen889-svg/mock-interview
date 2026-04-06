@@ -1,8 +1,13 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "@/server/trpc";
+import { protectedProcedure, publicProcedure, router } from "@/server/trpc";
 import { db } from "@/server/db";
+import { getAvailableModels } from "@/lib/llm-providers";
 
 export const userRouter = router({
+  availableModels: publicProcedure.query(() => {
+    return getAvailableModels();
+  }),
+
   me: protectedProcedure.query(async ({ ctx }) => {
     return db.user.findUniqueOrThrow({
       where: { id: ctx.session.user.id },

@@ -12,7 +12,6 @@ import {
   JOB_ROLES,
   TECH_STACKS,
   DIFFICULTY_OPTIONS,
-  MODEL_OPTIONS,
 } from "@/lib/interview-config";
 import type { Difficulty } from "@/types/interview";
 
@@ -32,6 +31,8 @@ export function InterviewSetupForm() {
   const [techStack, setTechStack] = useState<string[]>([]);
   const [difficulty, setDifficulty] = useState<Difficulty | "">("");
   const [model, setModel] = useState("");
+
+  const { data: availableModels = [] } = trpc.user.availableModels.useQuery();
 
   const createMutation = trpc.interview.create.useMutation({
     onSuccess: (data) => {
@@ -206,30 +207,36 @@ export function InterviewSetupForm() {
       {currentStep === "model" && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-center">选择 AI 模型</h2>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            {MODEL_OPTIONS.map((opt) => (
-              <Card
-                key={opt.value}
-                className={cn(
-                  "cursor-pointer p-5 transition-all hover:shadow-md",
-                  model === opt.value
-                    ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
-                    : "hover:border-gray-300"
-                )}
-                onClick={() => setModel(opt.value)}
-              >
-                <div className="flex items-center gap-2">
-                  <p className="font-medium">{opt.label}</p>
-                  {opt.tier === "PRO" && (
-                    <Badge variant="secondary" className="text-xs">
-                      PRO
-                    </Badge>
+          {availableModels.length === 0 ? (
+            <p className="text-center text-gray-500">
+              暂无可用模型，请联系管理员配置 API Key
+            </p>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {availableModels.map((opt) => (
+                <Card
+                  key={opt.id}
+                  className={cn(
+                    "cursor-pointer p-5 transition-all hover:shadow-md",
+                    model === opt.id
+                      ? "border-blue-600 bg-blue-50 ring-1 ring-blue-600"
+                      : "hover:border-gray-300"
                   )}
-                </div>
-                <p className="text-sm text-gray-500 mt-1">{opt.description}</p>
-              </Card>
-            ))}
-          </div>
+                  onClick={() => setModel(opt.id)}
+                >
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium">{opt.label}</p>
+                    {opt.tier === "PRO" && (
+                      <Badge variant="secondary" className="text-xs">
+                        PRO
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 mt-1">{opt.description}</p>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
